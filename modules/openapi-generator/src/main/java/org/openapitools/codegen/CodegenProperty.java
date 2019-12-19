@@ -77,6 +77,7 @@ public class CodegenProperty implements Cloneable, IJsonSchemaValidationProperti
     public boolean isFreeFormObject;
     public boolean isListContainer;
     public boolean isMapContainer;
+    public boolean isModelContainer;
     public boolean isEnum;
     public boolean isReadOnly;
     public boolean isWriteOnly;
@@ -569,6 +570,7 @@ public class CodegenProperty implements Cloneable, IJsonSchemaValidationProperti
         sb.append(", isFreeFormObject=").append(isFreeFormObject);
         sb.append(", isListContainer=").append(isListContainer);
         sb.append(", isMapContainer=").append(isMapContainer);
+        sb.append(", isModelContainer=").append(isModelContainer);
         sb.append(", isEnum=").append(isEnum);
         sb.append(", isReadOnly=").append(isReadOnly);
         sb.append(", isWriteOnly=").append(isWriteOnly);
@@ -633,6 +635,7 @@ public class CodegenProperty implements Cloneable, IJsonSchemaValidationProperti
                 isFreeFormObject == that.isFreeFormObject &&
                 isListContainer == that.isListContainer &&
                 isMapContainer == that.isMapContainer &&
+                isModelContainer == that.isModelContainer &&
                 isEnum == that.isEnum &&
                 isReadOnly == that.isReadOnly &&
                 isWriteOnly == that.isWriteOnly &&
@@ -693,9 +696,9 @@ public class CodegenProperty implements Cloneable, IJsonSchemaValidationProperti
                 minimum, maximum, exclusiveMinimum, exclusiveMaximum, hasMore, required, secondaryParam,
                 hasMoreNonReadOnly, isPrimitiveType, isModel, isContainer, isString, isNumeric, isInteger,
                 isLong, isNumber, isFloat, isDouble, isByteArray, isBinary, isFile, isBoolean, isDate, isDateTime,
-                isUuid, isUri, isEmail, isFreeFormObject, isListContainer, isMapContainer, isEnum, isReadOnly,
-                isWriteOnly, isNullable, isSelfReference, isCircularReference, _enum, allowableValues, items,
-                mostInnerItems, vendorExtensions, hasValidation, isInherited, discriminatorValue, nameInCamelCase,
+                isUuid, isUri, isEmail, isFreeFormObject, isListContainer, isMapContainer, isModelContainer, isEnum,
+                isReadOnly, isWriteOnly, isNullable, isSelfReference, isCircularReference, _enum, allowableValues,
+                items, mostInnerItems, vendorExtensions, hasValidation, isInherited, discriminatorValue, nameInCamelCase,
                 nameInSnakeCase, enumName, maxItems, minItems, isXmlAttribute, xmlPrefix, xmlName, xmlNamespace,
                 isXmlWrapped);
     }

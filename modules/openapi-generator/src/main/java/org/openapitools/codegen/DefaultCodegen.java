@@ -2024,6 +2024,12 @@ public class DefaultCodegen implements CodegenConfig {
             addVars(m, unaliasPropertySchema(schema.getProperties()), schema.getRequired(), null, null);
         }
 
+        if (ModelUtils.isObjectSchema(schema)) {
+            for (String reference : ModelUtils.getCircularReferencedSchemaNames(this.openAPI, name, schema)) {
+                m.circularReferences.add(toModelName(reference));
+            }
+        }
+
         // remove duplicated properties
         m.removeAllDuplicatedProperty();
 
@@ -2378,6 +2384,9 @@ public class DefaultCodegen implements CodegenConfig {
             }
             CodegenProperty cp = fromProperty(itemName, innerSchema);
             updatePropertyForArray(property, cp);
+            // set flag if container contains models
+            Schema refOrCurrent = ModelUtils.getReferencedSchema(this.openAPI, innerSchema);
+            property.isModelContainer = (ModelUtils.isComposedSchema(refOrCurrent) || ModelUtils.isObjectSchema(refOrCurrent)) && ModelUtils.isModel(refOrCurrent);
         } else if (ModelUtils.isMapSchema(p)) {
             property.isContainer = true;
             property.isMapContainer = true;
