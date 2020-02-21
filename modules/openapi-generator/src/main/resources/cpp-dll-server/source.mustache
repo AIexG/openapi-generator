@@ -1,0 +1,208 @@
+/**
+ * @Name {{appName}} {{appVersion}}
+ * @Date {{generatedDate}}
+ * @Description {{appDescription}}
+ *
+ * Automatically generated interface
+ **/
+
+#include "CppDllServer.h"
+
+{{#hasEnums}}
+/**
+ * ENUM declaration, all unique enums used in the OpenAPI specification
+ **/
+{{/hasEnums}}
+{{#uniqueEnums}}
+static const std::vector<std::string> i{{name}} = {""{{#values}}, "{{this}}"{{/values}}};
+{{/uniqueEnums}}
+
+/**
+ * @fn ST_STRING::ST_STRING
+ * @param data String to be copied and stored in the struct
+ * @brief Constructor for struct ST_STRING
+ **/
+ST_STRING::ST_STRING(std::string const &data) {
+	data.copy(acData, min(data.size(), sizeof(acData) / sizeof(acData[0]) - 1));
+}
+
+/**
+ * @fn ST_HTS_BASE::handleAdditionalProperties
+ * @param ct A property tree iterator
+ * @param params A structs map for additinal values
+ **/
+void ST_HTS_BASE::handleAdditionalProperties(std::pair<const std::string, boost::property_tree::ptree> const &ct, std::map<std::string, ST_STRING> &params) {
+	// Node is a terminal value (No children && has data)
+	if (ct.second.empty() && !ct.second.data().empty()) {
+		params.emplace(ct.first.data(), ST_STRING(ct.second.data()));
+	}
+}
+
+/**
+ * @fn ST_HTS_BASE::handlePropertyArrayOfSchemas
+ * @param pt The property tree
+ * @param vector A vector of type T containing function fromPropertyTree()
+ * @param name JSON key name as string 
+ * @param size Reference to an integer containing vector size
+ * @return false if an error has occured, missing a required parameter
+ **/
+template<typename T>
+bool ST_HTS_BASE::handlePropertyArrayOfSchemas(boost::property_tree::ptree const &pt, std::vector<T> &vector, std::string const &name, int &size) {
+	bool bOutput = true;
+	if (pt.get_child_optional(name)) {
+		for (const auto &childTree : pt.get_child(name)) {
+			vector.emplace_back();
+			bOutput = vector.back().fromPropertyTree(childTree.second);
+			if (!bOutput)
+				break;
+		}
+		size = vector.size();
+	}
+	return bOutput;
+}
+
+/**
+ * @fn ST_HTS_BASE::handlePropertySchema
+ * @param pt The property tree
+ * @param property A property of type T containing function fromPropertyTree()
+ * @param name JSON key name as string
+ * @return false if an error has occured, missing a required parameter
+ **/
+template<typename T>
+bool ST_HTS_BASE::handlePropertySchema(boost::property_tree::ptree const &pt, T &property, const std::string &name, bool bRequired) {
+	bool bOutput = true;
+	if (!bRequired || pt.get_child_optional(name)) {
+		bOutput = property.fromPropertyTree(pt.get_child(name));
+	}
+	else {
+		bOutput = false;
+	}
+	return bOutput;
+}
+
+{{#models}}
+{{#model}}
+
+/**
+ * @fn ST_{{classVarName}}::fromPropertyTree
+ * @param pt The property tree
+ * @return boolean, returns false if an error has occured (e.g. missing a required parameter)
+ **/
+bool ST_{{classVarName}}::fromPropertyTree(boost::property_tree::ptree const &pt)
+{
+	bool bOutput = true;
+	std::vector<std::string> vVisited;
+
+{{#vars}}
+{{#required}}
+	if (!pt.get_child_optional("{{baseName}}"))
+		return false; // reqired parameter {{baseName}} is missing
+{{/required}}
+{{/vars}}
+{{#vars}}
+{{^isContainer}}
+{{#isPrimitiveType}}
+{{#isBoolean}}
+	b{{name}} = pt.get("{{baseName}}", {{{defaultValue}}});
+{{/isBoolean}}
+{{#isFloat}}
+	f{{name}} = pt.get("{{baseName}}", {{{defaultValue}}});
+{{/isFloat}}
+{{#isLong}}
+	l{{name}} = pt.get("{{baseName}}", {{{defaultValue}}});
+{{/isLong}}
+{{#isDouble}}
+	d{{name}} = pt.get("{{baseName}}", {{{defaultValue}}});
+{{/isDouble}}
+{{#isInteger}}
+	i{{name}} = pt.get("{{baseName}}", {{{defaultValue}}});
+{{/isInteger}}
+{{#isNumber}}
+{{^isFloat}}
+{{^isLong}}
+{{^isDouble}}
+{{^isInteger}}
+	d{{name}} = pt.get("{{baseName}}", {{{defaultValue}}});
+{{/isInteger}}
+{{/isDouble}}
+{{/isLong}}
+{{/isFloat}}
+{{/isNumber}}
+{{/isPrimitiveType}}
+{{^isPrimitiveType}}
+{{#isString}}
+{{^isEnum}}
+{{#required}}
+	pt.get("{{baseName}}", {{{defaultValue}}}).copy(ac{{name}}, min(pt.get("{{baseName}}", {{{defaultValue}}}).size(), sizeof(ac{{name}}) / sizeof(ac{{name}}[0]) - 1));
+	vVisited.emplace_back("{{baseName}}");
+{{/required}}
+{{/isEnum}}
+{{#isEnum}}
+	i{{name}} = std::distance(i{{name}}.begin(), std::find(i{{name}}.begin(), i{{name}}.end(), pt.get("{{baseName}}", {{{defaultValue}}})));
+	vVisited.emplace_back("{{baseName}}");
+{{/isEnum}}
+{{/isString}}
+{{#isDate}}
+{{#required}}
+	pt.get("{{baseName}}", {{{defaultValue}}}).copy(ac{{name}}, min(pt.get("{{baseName}}", {{{defaultValue}}}).size(), sizeof(ac{{name}}) / sizeof(ac{{name}}[0]) - 1));
+	vVisited.emplace_back("{{baseName}}");
+{{/required}}
+{{/isDate}}
+{{#isDateTime}}
+{{#required}}
+	pt.get("{{baseName}}", {{{defaultValue}}}).copy(ac{{name}}, min(pt.get("{{baseName}}", {{{defaultValue}}}).size(), sizeof(ac{{name}}) / sizeof(ac{{name}}[0]) - 1));
+	vVisited.emplace_back("{{baseName}}");
+{{/required}}
+{{/isDateTime}}
+{{#isModel}}
+	if (bOutput && pt.get_child_optional("{{baseName}}")) {
+		bOutput = handlePropertySchema(pt, {{name}}, "{{baseName}}", {{#required}}true{{/required}}{{^required}}false{{/required}});
+	}
+{{/isModel}}
+{{/isPrimitiveType}}
+{{/isContainer}}
+{{#isContainer}}
+{{#isModelContainer}}
+	if (bOutput && pt.get_child_optional("{{baseName}}")) {
+		bOutput = handlePropertyArrayOfSchemas(pt, v{{name}}, "{{baseName}}", i{{name}}Size);
+	}
+{{/isModelContainer}}
+{{^isModelContainer}}
+	if (bOutput && pt.get_child_optional("{{baseName}}")) {
+		for (const auto &childTree : pt.get_child("{{baseName}}")) {
+{{#mostInnerItems}}
+{{#isString}}
+			v{{name}}.emplace_back();
+			childTree.second.data().copy(v{{name}}.back().acData, min(childTree.second.data().size(), sizeof(v{{name}}.back().acData) / sizeof(v{{name}}.back().acData[0]) - 1));
+{{/isString}}
+{{^isString}}
+			v{{name}}.emplace_back({{^isFloat}}{{^isLong}}{{^isInteger}}std::stod{{/isInteger}}{{/isLong}}{{/isFloat}}{{#isDouble}}std::stod{{/isDouble}}{{#isFloat}}std::stof{{/isFloat}}{{#isInteger}}std::stoi{{/isInteger}}{{#isLong}}std::stol{{/isLong}}(childTree.second.data()));{{/isString}}
+{{/mostInnerItems}}
+		}
+		i{{name}}Size = v{{name}}.size();
+	}
+{{/isModelContainer}}
+{{/isContainer}}
+{{#isContainer}}
+{{#isModel}}
+	}
+{{/isModel}}
+{{/isContainer}}
+{{^isString}}
+{{^isDate}}
+{{^isDateTime}}
+	vVisited.emplace_back("{{baseName}}");
+{{/isDateTime}}
+{{/isDate}}
+{{/isString}}
+{{/vars}}
+	for (const auto &ct : pt) {
+		if (std::find(vVisited.begin(), vVisited.end(), ct.first.data()) == vVisited.end()) {
+			handleAdditionalProperties(ct, mParams);
+		}
+	}
+
+	return bOutput;
+}
+{{/model}}
+{{/models}}

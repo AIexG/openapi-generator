@@ -1,0 +1,164 @@
+/**
+ * @Name {{appName}} {{appVersion}}
+ * @Date {{generatedDate}}
+ * @Description {{appDescription}}
+ *
+ * Automatically generated interface
+ **/
+
+#ifndef NOMINMAX
+#ifndef max
+#define max(a,b)            (((a) > (b)) ? (a) : (b))
+#endif
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
+#endif  /* NOMINMAX */
+
+#include <vector>
+#include <map>
+#include <string>
+#include <boost/property_tree/ptree.hpp>
+{{#imports}}{{{import}}}
+{{/imports}}
+
+/**
+ * @struct ST_STRING
+ * @brief Structure containing a single c style string
+ **/
+typedef struct ST_STRING {
+	char acData[64] = {0};
+	ST_STRING() {};
+	ST_STRING(std::string const &data);
+} ST_STRING;
+
+/**
+ * @struct ST_HTS_BASE
+ * @brief Provides base functionality to HTS structs
+ **/
+typedef struct ST_HTS_BASE {
+protected:
+	void handleAdditionalProperties(std::pair<const std::string, boost::property_tree::ptree> const &ct, std::map<std::string, ST_STRING> &params);
+	template<typename T>
+	bool handlePropertyArrayOfSchemas(boost::property_tree::ptree const &pt, std::vector<T> &vector, std::string const &name, int &size);
+	template<typename T>
+	bool handlePropertySchema(boost::property_tree::ptree const &pt, T &property, const std::string &name, bool bRequired = false);
+} ST_HTS_BASE;
+
+/**
+ * Order of automatically generated TestOrder structs:
+ *
+{{#models}}
+{{#model}}
+ * - {{classVarName}}
+{{/model}}
+{{/models}}
+ **/
+
+{{#models}}
+{{#model}}/**
+ * @struct ST_{{classVarName}}
+ * @brief {{description}}
+ *
+ * This structure must have the same format and size
+ * as the mode specific structure in the ODX-Service.
+ * It is used to pass parameters for the action
+{{#circularReferences}} *
+ * requires {{{this}}};{{/circularReferences}} **/
+#pragma pack(push)
+#pragma pack(1)
+typedef struct ST_{{classVarName}} : protected ST_HTS_BASE {
+{{#vars}}
+{{^isContainer}}
+{{#isPrimitiveType}}
+{{#isBoolean}}
+	bool b{{name}};
+{{/isBoolean}}
+{{#isFloat}}
+	float f{{name}};
+{{/isFloat}}
+{{#isLong}}
+	long l{{name}};
+{{/isLong}}
+{{#isDouble}}
+	double d{{name}};
+{{/isDouble}}
+{{#isInteger}}
+	int i{{name}};
+{{/isInteger}}
+{{#isNumber}}
+{{^isFloat}}
+{{^isLong}}
+{{^isDouble}}
+{{^isInteger}}
+	double d{{name}};
+{{/isInteger}}
+{{/isDouble}}
+{{/isLong}}
+{{/isFloat}}
+{{/isNumber}}
+{{/isPrimitiveType}}
+{{^isPrimitiveType}}
+{{#isString}}
+{{^isEnum}}
+{{#required}}
+	char ac{{name}}[64] = {0};
+{{/required}}
+{{/isEnum}}
+{{#isEnum}}
+	unsigned short i{{name}}; //ENUM:{{#_enum}} {{.}}{{/_enum}}
+{{/isEnum}}
+{{/isString}}
+{{#isDate}}
+{{#required}}
+	char ac{{name}}[11] = {0}; // Date
+{{/required}}
+{{/isDate}}
+{{#isDateTime}}
+{{#required}}
+	char ac{{name}}[21] = {0}; // Datetime
+{{/required}}
+{{/isDateTime}}
+{{#isModel}}
+	ST_{{complexType}} {{name}};
+{{/isModel}}
+{{/isPrimitiveType}}
+{{/isContainer}}
+{{#isContainer}}
+{{#mostInnerItems}}
+{{#isModel}}
+	std::vector<ST_{{complexType}}> v{{name}};
+	int i{{name}}Size;
+{{/isModel}}
+{{^isModel}}
+{{#isString}}
+	std::vector<ST_STRING> v{{name}};
+	int i{{name}}Size;
+{{/isString}}
+{{#isFloat}}
+	std::vector<float> v{{name}};
+	int i{{name}}Size;
+{{/isFloat}}
+{{#isLong}}
+	std::vector<long> v{{name}};
+	int i{{name}}Size;
+{{/isLong}}
+{{#isDouble}}
+	std::vector<double> v{{name}};
+	int i{{name}}Size;
+{{/isDouble}}
+{{#isInteger}}
+	std::vector<int> v{{name}};
+	int i{{name}}Size;
+{{/isInteger}}
+{{/isModel}}
+{{/mostInnerItems}}
+{{/isContainer}}
+{{/vars}}
+	std::map<std::string, ST_STRING> mParams;
+	bool fromPropertyTree(boost::property_tree::ptree const &pt);
+} ST_{{classVarName}};
+#pragma pack(pop)
+
+{{/model}}
+{{/models}}
