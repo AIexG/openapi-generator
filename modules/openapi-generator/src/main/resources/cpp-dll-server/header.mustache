@@ -33,17 +33,19 @@ typedef struct ST_STRING {
 } ST_STRING;
 
 /**
- * @struct ST_HTS_BASE
- * @brief Provides base functionality to HTS structs
+ * @struct ST_BASE
+ * @brief Provides base functionality to structs
  **/
-typedef struct ST_HTS_BASE {
+typedef struct ST_BASE {
+	unsigned int uiAdditionalParamsSize;
+	std::map<std::string, ST_STRING> mAdditionalParams;
 protected:
 	void handleAdditionalProperties(std::pair<const std::string, boost::property_tree::ptree> const &ct, std::map<std::string, ST_STRING> &params);
 	template<typename T>
 	bool handlePropertyArrayOfSchemas(boost::property_tree::ptree const &pt, std::vector<T> &vector, std::string const &name, int &size);
 	template<typename T>
 	bool handlePropertySchema(boost::property_tree::ptree const &pt, T &property, const std::string &name, bool bRequired = false);
-} ST_HTS_BASE;
+} ST_BASE;
 
 /**
  * Order of automatically generated TestOrder structs:
@@ -67,7 +69,7 @@ protected:
  * requires {{{this}}};{{/circularReferences}} **/
 #pragma pack(push)
 #pragma pack(1)
-typedef struct ST_{{classVarName}} : protected ST_HTS_BASE {
+typedef struct ST_{{classVarName}} : protected ST_BASE {
 {{#vars}}
 {{^isContainer}}
 {{#isPrimitiveType}}
@@ -101,23 +103,17 @@ typedef struct ST_{{classVarName}} : protected ST_HTS_BASE {
 {{^isPrimitiveType}}
 {{#isString}}
 {{^isEnum}}
-{{#required}}
 	char ac{{name}}[64] = {0};
-{{/required}}
 {{/isEnum}}
 {{#isEnum}}
 	unsigned short i{{name}}; //ENUM:{{#_enum}} {{.}}{{/_enum}}
 {{/isEnum}}
 {{/isString}}
 {{#isDate}}
-{{#required}}
 	char ac{{name}}[11] = {0}; // Date
-{{/required}}
 {{/isDate}}
 {{#isDateTime}}
-{{#required}}
 	char ac{{name}}[21] = {0}; // Datetime
-{{/required}}
 {{/isDateTime}}
 {{#isModel}}
 	ST_{{complexType}} {{name}};
@@ -127,35 +123,34 @@ typedef struct ST_{{classVarName}} : protected ST_HTS_BASE {
 {{#isContainer}}
 {{#mostInnerItems}}
 {{#isModel}}
-	std::vector<ST_{{complexType}}> v{{name}};
 	int i{{name}}Size;
+	std::vector<ST_{{complexType}}> v{{name}};
 {{/isModel}}
 {{^isModel}}
 {{#isString}}
-	std::vector<ST_STRING> v{{name}};
 	int i{{name}}Size;
+	std::vector<ST_STRING> v{{name}};
 {{/isString}}
 {{#isFloat}}
-	std::vector<float> v{{name}};
 	int i{{name}}Size;
+	std::vector<float> v{{name}};
 {{/isFloat}}
 {{#isLong}}
-	std::vector<long> v{{name}};
 	int i{{name}}Size;
+	std::vector<long> v{{name}};
 {{/isLong}}
 {{#isDouble}}
-	std::vector<double> v{{name}};
 	int i{{name}}Size;
+	std::vector<double> v{{name}};
 {{/isDouble}}
 {{#isInteger}}
-	std::vector<int> v{{name}};
 	int i{{name}}Size;
+	std::vector<int> v{{name}};
 {{/isInteger}}
 {{/isModel}}
 {{/mostInnerItems}}
 {{/isContainer}}
 {{/vars}}
-	std::map<std::string, ST_STRING> mParams;
 	bool fromPropertyTree(boost::property_tree::ptree const &pt);
 } ST_{{classVarName}};
 #pragma pack(pop)
