@@ -6,14 +6,9 @@
  * Automatically generated interface
  **/
 
-#ifndef NOMINMAX
-#ifndef max
-#define max(a,b)            (((a) > (b)) ? (a) : (b))
-#endif
-#ifndef min
-#define min(a,b)            (((a) < (b)) ? (a) : (b))
-#endif
-#endif  /* NOMINMAX */
+#ifndef MIN
+#define MIN(a,b)	(((a) < (b)) ? (a) : (b))
+#endif /* MIN */
 
 #include <vector>
 #include <map>
@@ -27,7 +22,7 @@
  * @brief Structure containing a single c style string
  **/
 typedef struct ST_STRING {
-	char acData[64] = {0};
+	char szData[64] = {0};
 	ST_STRING() {};
 	ST_STRING(std::string const &data);
 } ST_STRING;
@@ -69,7 +64,7 @@ protected:
  * requires {{{this}}};{{/circularReferences}} **/
 #pragma pack(push)
 #pragma pack(1)
-typedef struct ST_{{classVarName}} : protected ST_BASE {
+typedef struct ST_{{classVarName}} : public ST_BASE {
 {{#vars}}
 {{^isContainer}}
 {{#isPrimitiveType}}
@@ -103,17 +98,17 @@ typedef struct ST_{{classVarName}} : protected ST_BASE {
 {{^isPrimitiveType}}
 {{#isString}}
 {{^isEnum}}
-	char ac{{name}}[64] = {0};
+	char sz{{name}}[64] = {0};
 {{/isEnum}}
 {{#isEnum}}
 	unsigned short i{{name}}; //ENUM:{{#_enum}} {{.}}{{/_enum}}
 {{/isEnum}}
 {{/isString}}
 {{#isDate}}
-	char ac{{name}}[11] = {0}; // Date
+	char sz{{name}}[11] = {0}; // Date
 {{/isDate}}
 {{#isDateTime}}
-	char ac{{name}}[21] = {0}; // Datetime
+	char sz{{name}}[21] = {0}; // Datetime
 {{/isDateTime}}
 {{#isModel}}
 	ST_{{complexType}} {{name}};
@@ -123,28 +118,28 @@ typedef struct ST_{{classVarName}} : protected ST_BASE {
 {{#isContainer}}
 {{#mostInnerItems}}
 {{#isModel}}
-	int i{{name}}Size;
+	int ui{{name}}Size;
 	std::vector<ST_{{complexType}}> v{{name}};
 {{/isModel}}
 {{^isModel}}
 {{#isString}}
-	int i{{name}}Size;
+	int ui{{name}}Size;
 	std::vector<ST_STRING> v{{name}};
 {{/isString}}
 {{#isFloat}}
-	int i{{name}}Size;
+	int ui{{name}}Size;
 	std::vector<float> v{{name}};
 {{/isFloat}}
 {{#isLong}}
-	int i{{name}}Size;
+	int ui{{name}}Size;
 	std::vector<long> v{{name}};
 {{/isLong}}
 {{#isDouble}}
-	int i{{name}}Size;
+	int ui{{name}}Size;
 	std::vector<double> v{{name}};
 {{/isDouble}}
 {{#isInteger}}
-	int i{{name}}Size;
+	int ui{{name}}Size;
 	std::vector<int> v{{name}};
 {{/isInteger}}
 {{/isModel}}

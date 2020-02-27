@@ -6,6 +6,7 @@
  * Automatically generated interface
  **/
 
+#include "stdafx.h"
 #include "CppDllServer.h"
 
 {{#hasEnums}}
@@ -23,7 +24,7 @@ static const std::vector<std::string> i{{name}} = {""{{#values}}, "{{this}}"{{/v
  * @brief Constructor for struct ST_STRING
  **/
 ST_STRING::ST_STRING(std::string const &data) {
-	data.copy(acData, min(data.size(), sizeof(acData) / sizeof(acData[0]) - 1));
+	data.copy(szData, MIN(data.size(), sizeof(szData) / sizeof(szData[0]) - 1));
 }
 
 /**
@@ -132,7 +133,7 @@ bool ST_{{classVarName}}::fromPropertyTree(boost::property_tree::ptree const &pt
 {{^isPrimitiveType}}
 {{#isString}}
 {{^isEnum}}
-	pt.get("{{baseName}}", {{{defaultValue}}}).copy(ac{{name}}, min(pt.get("{{baseName}}", {{{defaultValue}}}).size(), sizeof(ac{{name}}) / sizeof(ac{{name}}[0]) - 1));
+	pt.get("{{baseName}}", {{{defaultValue}}}).copy(sz{{name}}, MIN(pt.get("{{baseName}}", {{{defaultValue}}}).size(), sizeof(sz{{name}}) / sizeof(sz{{name}}[0]) - 1));
 	vVisited.emplace_back("{{baseName}}");
 {{/isEnum}}
 {{#isEnum}}
@@ -141,11 +142,11 @@ bool ST_{{classVarName}}::fromPropertyTree(boost::property_tree::ptree const &pt
 {{/isEnum}}
 {{/isString}}
 {{#isDate}}
-	pt.get("{{baseName}}", {{{defaultValue}}}).copy(ac{{name}}, min(pt.get("{{baseName}}", {{{defaultValue}}}).size(), sizeof(ac{{name}}) / sizeof(ac{{name}}[0]) - 1));
+	pt.get("{{baseName}}", {{{defaultValue}}}).copy(sz{{name}}, MIN(pt.get("{{baseName}}", {{{defaultValue}}}).size(), sizeof(sz{{name}}) / sizeof(sz{{name}}[0]) - 1));
 	vVisited.emplace_back("{{baseName}}");
 {{/isDate}}
 {{#isDateTime}}
-	pt.get("{{baseName}}", {{{defaultValue}}}).copy(ac{{name}}, min(pt.get("{{baseName}}", {{{defaultValue}}}).size(), sizeof(ac{{name}}) / sizeof(ac{{name}}[0]) - 1));
+	pt.get("{{baseName}}", {{{defaultValue}}}).copy(sz{{name}}, MIN(pt.get("{{baseName}}", {{{defaultValue}}}).size(), sizeof(sz{{name}}) / sizeof(sz{{name}}[0]) - 1));
 	vVisited.emplace_back("{{baseName}}");
 {{/isDateTime}}
 {{#isModel}}
@@ -167,7 +168,7 @@ bool ST_{{classVarName}}::fromPropertyTree(boost::property_tree::ptree const &pt
 {{#mostInnerItems}}
 {{#isString}}
 			v{{name}}.emplace_back();
-			childTree.second.data().copy(v{{name}}.back().acData, min(childTree.second.data().size(), sizeof(v{{name}}.back().acData) / sizeof(v{{name}}.back().acData[0]) - 1));
+			childTree.second.data().copy(v{{name}}.back().szData, MIN(childTree.second.data().size(), sizeof(v{{name}}.back().szData) / sizeof(v{{name}}.back().szData[0]) - 1));
 {{/isString}}
 {{^isString}}
 			v{{name}}.emplace_back({{^isFloat}}{{^isLong}}{{^isInteger}}std::stod{{/isInteger}}{{/isLong}}{{/isFloat}}{{#isDouble}}std::stod{{/isDouble}}{{#isFloat}}std::stof{{/isFloat}}{{#isInteger}}std::stoi{{/isInteger}}{{#isLong}}std::stol{{/isLong}}(childTree.second.data()));{{/isString}}
