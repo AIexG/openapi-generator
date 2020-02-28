@@ -23,19 +23,22 @@ static const std::vector<std::string> i{{name}} = {""{{#values}}, "{{this}}"{{/v
  * @param data String to be copied and stored in the struct
  * @brief Constructor for struct ST_STRING
  **/
-ST_STRING::ST_STRING(std::string const &data) {
+ST_STRING::ST_STRING(std::string const &data)
+{
 	data.copy(szData, MIN(data.size(), sizeof(szData) / sizeof(szData[0]) - 1));
 }
 
 /**
  * @fn ST_BASE::handleAdditionalProperties
  * @param ct A property tree iterator
- * @param params A structs map for additinal values
+ * @param mParams A structs map for additinal values
  **/
-void ST_BASE::handleAdditionalProperties(std::pair<const std::string, boost::property_tree::ptree> const &ct, std::map<std::string, ST_STRING> &params) {
+void ST_BASE::handleAdditionalProperties(std::pair<const std::string, boost::property_tree::ptree> const &ct, std::map<std::string, ST_STRING> &mParams)
+{
 	// Node is a terminal value (No children && has data)
-	if (ct.second.empty() && !ct.second.data().empty()) {
-		params.emplace(ct.first.data(), ST_STRING(ct.second.data()));
+	if (ct.second.empty() && !ct.second.data().empty())
+	{
+		mParams.emplace(ct.first.data(), ST_STRING(ct.second.data()));
 	}
 }
 
@@ -43,21 +46,26 @@ void ST_BASE::handleAdditionalProperties(std::pair<const std::string, boost::pro
  * @fn ST_BASE::handlePropertyArrayOfSchemas
  * @param pt The property tree
  * @param vector A vector of type T containing function fromPropertyTree()
- * @param name JSON key name as string 
- * @param size Reference to an integer containing vector size
+ * @param szName JSON key name as string 
+ * @param ulSize Reference to an integer containing vector size
  * @return false if an error has occured, missing a required parameter
  **/
 template<typename T>
-bool ST_BASE::handlePropertyArrayOfSchemas(boost::property_tree::ptree const &pt, std::vector<T> &vector, std::string const &name, int &size) {
+bool ST_BASE::handlePropertyArrayOfSchemas(boost::property_tree::ptree const &pt, std::vector<T> &vector, std::string const &szName, unsigned long &ulSize)
+{
 	bool bOutput = true;
-	if (pt.get_child_optional(name)) {
-		for (const auto &childTree : pt.get_child(name)) {
+	if (pt.get_child_optional(szName))
+	{
+		for (const auto &childTree : pt.get_child(szName))
+		{
 			vector.emplace_back();
 			bOutput = vector.back().fromPropertyTree(childTree.second);
 			if (!bOutput)
+			{
 				break;
+			}
 		}
-		size = vector.size();
+		ulSize = vector.size();
 	}
 	return bOutput;
 }
@@ -66,16 +74,18 @@ bool ST_BASE::handlePropertyArrayOfSchemas(boost::property_tree::ptree const &pt
  * @fn ST_BASE::handlePropertySchema
  * @param pt The property tree
  * @param property A property of type T containing function fromPropertyTree()
- * @param name JSON key name as string
+ * @param szName JSON key name as string
  * @return false if an error has occured, missing a required parameter
  **/
 template<typename T>
-bool ST_BASE::handlePropertySchema(boost::property_tree::ptree const &pt, T &property, const std::string &name, bool bRequired) {
+bool ST_BASE::handlePropertySchema(boost::property_tree::ptree const &pt, T &property, const std::string &szName, bool bRequired)
+{
 	bool bOutput = true;
-	if (!bRequired || pt.get_child_optional(name)) {
-		bOutput = property.fromPropertyTree(pt.get_child(name));
+	if (!bRequired || pt.get_child_optional(szName)) {
+		bOutput = property.fromPropertyTree(pt.get_child(szName));
 	}
-	else {
+	else
+	{
 		bOutput = false;
 	}
 	return bOutput;
@@ -97,7 +107,9 @@ bool ST_{{classVarName}}::fromPropertyTree(boost::property_tree::ptree const &pt
 {{#vars}}
 {{#required}}
 	if (!pt.get_child_optional("{{baseName}}"))
+	{
 		return false; // reqired parameter {{baseName}} is missing
+	}
 {{/required}}
 {{/vars}}
 {{#vars}}
@@ -105,18 +117,23 @@ bool ST_{{classVarName}}::fromPropertyTree(boost::property_tree::ptree const &pt
 {{#isPrimitiveType}}
 {{#isBoolean}}
 	b{{name}} = pt.get("{{baseName}}", {{{defaultValue}}});
+	ulSize += sizeof(b{{name}});
 {{/isBoolean}}
 {{#isFloat}}
 	f{{name}} = pt.get("{{baseName}}", {{{defaultValue}}});
+	ulSize += sizeof(f{{name}});
 {{/isFloat}}
 {{#isLong}}
 	l{{name}} = pt.get("{{baseName}}", {{{defaultValue}}});
+	ulSize += sizeof(l{{name}});
 {{/isLong}}
 {{#isDouble}}
 	d{{name}} = pt.get("{{baseName}}", {{{defaultValue}}});
+	ulSize += sizeof(d{{name}});
 {{/isDouble}}
 {{#isInteger}}
 	i{{name}} = pt.get("{{baseName}}", {{{defaultValue}}});
+	ulSize += sizeof(i{{name}});
 {{/isInteger}}
 {{#isNumber}}
 {{^isFloat}}
@@ -124,6 +141,7 @@ bool ST_{{classVarName}}::fromPropertyTree(boost::property_tree::ptree const &pt
 {{^isDouble}}
 {{^isInteger}}
 	d{{name}} = pt.get("{{baseName}}", {{{defaultValue}}});
+	ulSize += sizeof(d{{name}});
 {{/isInteger}}
 {{/isDouble}}
 {{/isLong}}
@@ -134,37 +152,47 @@ bool ST_{{classVarName}}::fromPropertyTree(boost::property_tree::ptree const &pt
 {{#isString}}
 {{^isEnum}}
 	pt.get("{{baseName}}", {{{defaultValue}}}).copy(sz{{name}}, MIN(pt.get("{{baseName}}", {{{defaultValue}}}).size(), sizeof(sz{{name}}) / sizeof(sz{{name}}[0]) - 1));
+	ulSize += sizeof(sz{{name}});
 	vVisited.emplace_back("{{baseName}}");
 {{/isEnum}}
 {{#isEnum}}
 	i{{name}} = std::distance(i{{datatypeWithEnum}}.begin(), std::find(i{{datatypeWithEnum}}.begin(), i{{datatypeWithEnum}}.end(), pt.get("{{baseName}}", {{{defaultValue}}})));
+	ulSize += sizeof(i{{name}});
 	vVisited.emplace_back("{{baseName}}");
 {{/isEnum}}
 {{/isString}}
 {{#isDate}}
 	pt.get("{{baseName}}", {{{defaultValue}}}).copy(sz{{name}}, MIN(pt.get("{{baseName}}", {{{defaultValue}}}).size(), sizeof(sz{{name}}) / sizeof(sz{{name}}[0]) - 1));
+	ulSize += sizeof(sz{{name}});
 	vVisited.emplace_back("{{baseName}}");
 {{/isDate}}
 {{#isDateTime}}
 	pt.get("{{baseName}}", {{{defaultValue}}}).copy(sz{{name}}, MIN(pt.get("{{baseName}}", {{{defaultValue}}}).size(), sizeof(sz{{name}}) / sizeof(sz{{name}}[0]) - 1));
+	ulSize += sizeof(sz{{name}});
 	vVisited.emplace_back("{{baseName}}");
 {{/isDateTime}}
 {{#isModel}}
-	if (bOutput && pt.get_child_optional("{{baseName}}")) {
+	if (bOutput && pt.get_child_optional("{{baseName}}"))
+	{
 		bOutput = handlePropertySchema(pt, {{name}}, "{{baseName}}", {{#required}}true{{/required}}{{^required}}false{{/required}});
 	}
+	ulSize += {{name}}.ulSize;
 {{/isModel}}
 {{/isPrimitiveType}}
 {{/isContainer}}
 {{#isContainer}}
 {{#isModelContainer}}
-	if (bOutput && pt.get_child_optional("{{baseName}}")) {
-		bOutput = handlePropertyArrayOfSchemas(pt, v{{name}}, "{{baseName}}", ui{{name}}Size);
+	if (bOutput && pt.get_child_optional("{{baseName}}"))
+	{
+		bOutput = handlePropertyArrayOfSchemas(pt, v{{name}}, "{{baseName}}", ul{{name}}Size);
 	}
+	ulSize += ul{{name}}Size;
 {{/isModelContainer}}
 {{^isModelContainer}}
-	if (bOutput && pt.get_child_optional("{{baseName}}")) {
-		for (const auto &childTree : pt.get_child("{{baseName}}")) {
+	if (bOutput && pt.get_child_optional("{{baseName}}"))
+	{
+		for (const auto &childTree : pt.get_child("{{baseName}}"))
+		{
 {{#mostInnerItems}}
 {{#isString}}
 			v{{name}}.emplace_back();
@@ -174,8 +202,9 @@ bool ST_{{classVarName}}::fromPropertyTree(boost::property_tree::ptree const &pt
 			v{{name}}.emplace_back({{^isFloat}}{{^isLong}}{{^isInteger}}std::stod{{/isInteger}}{{/isLong}}{{/isFloat}}{{#isDouble}}std::stod{{/isDouble}}{{#isFloat}}std::stof{{/isFloat}}{{#isInteger}}std::stoi{{/isInteger}}{{#isLong}}std::stol{{/isLong}}(childTree.second.data()));{{/isString}}
 {{/mostInnerItems}}
 		}
-		ui{{name}}Size = v{{name}}.size();
+		ul{{name}}Size = v{{name}}.size();
 	}
+	ulSize += ul{{name}}Size;
 {{/isModelContainer}}
 {{/isContainer}}
 {{#isContainer}}
@@ -191,14 +220,17 @@ bool ST_{{classVarName}}::fromPropertyTree(boost::property_tree::ptree const &pt
 {{/isDate}}
 {{/isString}}
 {{/vars}}
-	for (const auto &ct : pt) {
-		if (std::find(vVisited.begin(), vVisited.end(), ct.first.data()) == vVisited.end()) {
+	for (const auto &ct : pt)
+	{
+		if (std::find(vVisited.begin(), vVisited.end(), ct.first.data()) == vVisited.end())
+		{
 			handleAdditionalProperties(ct, mAdditionalParams);
 		}
 	}
-	uiAdditionalParamsSize = mAdditionalParams.size();
+	ulAdditionalParamsSize = mAdditionalParams.size();
 
 	return bOutput;
 }
+
 {{/model}}
 {{/models}}

@@ -32,14 +32,15 @@ typedef struct ST_STRING {
  * @brief Provides base functionality to structs
  **/
 typedef struct ST_BASE {
-	unsigned int uiAdditionalParamsSize;
+	unsigned long ulSize = 0;
+	unsigned long ulAdditionalParamsSize;
 	std::map<std::string, ST_STRING> mAdditionalParams;
 protected:
-	void handleAdditionalProperties(std::pair<const std::string, boost::property_tree::ptree> const &ct, std::map<std::string, ST_STRING> &params);
+	void handleAdditionalProperties(std::pair<const std::string, boost::property_tree::ptree> const &ct, std::map<std::string, ST_STRING> &mParams);
 	template<typename T>
-	bool handlePropertyArrayOfSchemas(boost::property_tree::ptree const &pt, std::vector<T> &vector, std::string const &name, int &size);
+	bool handlePropertyArrayOfSchemas(boost::property_tree::ptree const &pt, std::vector<T> &vector, std::string const &szName, unsigned long &ulSize);
 	template<typename T>
-	bool handlePropertySchema(boost::property_tree::ptree const &pt, T &property, const std::string &name, bool bRequired = false);
+	bool handlePropertySchema(boost::property_tree::ptree const &pt, T &property, const std::string &szName, bool bRequired = false);
 } ST_BASE;
 
 /**
@@ -118,28 +119,28 @@ typedef struct ST_{{classVarName}} : public ST_BASE {
 {{#isContainer}}
 {{#mostInnerItems}}
 {{#isModel}}
-	int ui{{name}}Size;
+	unsigned long ul{{name}}Size;
 	std::vector<ST_{{complexType}}> v{{name}};
 {{/isModel}}
 {{^isModel}}
 {{#isString}}
-	int ui{{name}}Size;
+	unsigned long ul{{name}}Size;
 	std::vector<ST_STRING> v{{name}};
 {{/isString}}
 {{#isFloat}}
-	int ui{{name}}Size;
+	unsigned long ul{{name}}Size;
 	std::vector<float> v{{name}};
 {{/isFloat}}
 {{#isLong}}
-	int ui{{name}}Size;
+	unsigned long ul{{name}}Size;
 	std::vector<long> v{{name}};
 {{/isLong}}
 {{#isDouble}}
-	int ui{{name}}Size;
+	unsigned long ul{{name}}Size;
 	std::vector<double> v{{name}};
 {{/isDouble}}
 {{#isInteger}}
-	int ui{{name}}Size;
+	unsigned long ul{{name}}Size;
 	std::vector<int> v{{name}};
 {{/isInteger}}
 {{/isModel}}
